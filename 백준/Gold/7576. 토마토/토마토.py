@@ -2,41 +2,67 @@ import sys
 from collections import deque
 
 input = sys.stdin.readline
-x, y = map(int, input().split())
-
-arr = [list(map(int, input().split())) for _ in range(y)]
-que = deque()
+x,y = map(int,input().split())
+size_arr = x*y
+size=0
+arr=[list(map(int,input().split())) for _ in range(y)]
 visit = set()
-size = 0  # 방문한 셀 개수
-
-# 초기 상태 설정
+result = 0
+que = deque()
 for i in range(y):
     for j in range(x):
         if arr[i][j] == 1:
-            que.append((i, j))
-            visit.add((i, j))
-            size += 1  # 익은 토마토 개수 증가
+            que.append((i,j))
+            size+=1
         elif arr[i][j] == -1:
-            size += 1  # 빈 공간 개수 증가
+            size+=1
 
-size_arr = x * y
+
+
 day = 0
 
-# BFS 실행
 while que:
-    for _ in range(len(que)):  # 현재 큐에 있는 모든 노드 처리
-        pY, pX = que.popleft()
+    temp_size = len(que)
 
-        for dY, dX in [(0,1), (0,-1), (1,0), (-1,0)]:
-            nY, nX = pY + dY, pX + dX
-            if 0 <= nY < y and 0 <= nX < x and arr[nY][nX] == 0 and (nY, nX) not in visit:
-                visit.add((nY, nX))  # 방문 체크
-                que.append((nY, nX))  # BFS 큐에 추가
-                arr[nY][nX] = 1  # 토마토 익음
-                size += 1  # 익은 토마토 개수 증가
-    
-    if que:  # BFS가 진행 중이면 하루 증가
-        day += 1
+    for _ in range(temp_size):
+        qItem=que.popleft()
+        pY,pX=qItem
+        if pX+1 < x and arr[pY][pX+1]==0 and (pY,pX+1) not in visit:
+            que.append((pY,pX+1))
+            visit.add((pY,pX+1))
+            arr[pY][pX+1] = 1
+            size+=1
+            
+        if pX-1 >= 0 and arr[pY][pX-1]==0 and (pY,pX-1) not in visit:
+            que.append((pY,pX-1))
+            visit.add((pY,pX-1))
+            arr[pY][pX-1] = 1
+            size+=1
+            
+        if pY+1 < y and arr[pY+1][pX]==0 and (pY+1,pX) not in visit:
+            que.append((pY+1,pX))
+            visit.add((pY+1,pX))
+            arr[pY+1][pX] = 1
+            size+=1
+            
+        if pY-1 >= 0 and arr[pY-1][pX]==0 and (pY-1,pX) not in visit:
+            que.append((pY-1,pX))
+            visit.add((pY-1,pX))
+            arr[pY-1][pX] = 1
+            size+=1
+        
 
-# 모든 토마토가 익었는지 확인
-print(day if size == size_arr else -1)
+        #print('----------------')
+        #for i in range(y):
+        #    for j in range(x):
+        #        print('%2d'%arr[i][j],end=" ")
+        #    print()
+        #print('-----',day,'--------')
+                    
+    day+=1
+
+
+if size_arr==size:
+    print(day-1)
+else:
+    print(-1)
